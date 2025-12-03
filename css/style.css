@@ -1,0 +1,256 @@
+:root{
+  --fb-yellow:#FFD400;
+  --fb-black:#111;
+  --ok:#28a745;
+  --warn:#e67e22;
+  --err:#c0392b;
+}
+body{
+  font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;
+  margin:0;background:#f5f5f5;color:#222;
+}
+header{
+  background:var(--fb-yellow);
+  color:var(--fb-black);
+  padding:14px 18px;
+  font-weight:700;
+  text-align:center;
+  font-size:20px;
+}
+.wrap{max-width:960px;margin:20px auto;padding:0 10px;}
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+  margin-bottom:16px;
+}
+.row{display:flex;flex-wrap:wrap;gap:12px;}
+.right{display:flex;gap:10px;justify-content:flex-end;margin-top:10px;}
+label{font-weight:600;display:block;margin-bottom:3px;}
+input,select,button{
+  font-family:inherit;font-size:15px;padding:8px;border-radius:8px;border:1px solid #ccc;
+}
+button{
+  background:var(--fb-yellow);border:none;cursor:pointer;font-weight:600;
+}
+button.warn{background:var(--warn);color:#fff;}
+button:hover{filter:brightness(1.05);}
+.pill{
+  background:var(--fb-yellow);
+  padding:4px 10px;border-radius:16px;font-weight:600;
+}
+.muted{color:#666;font-size:13px;}
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);
+  display:flex;align-items:center;justify-content:center;z-index:50;
+}
+.modal-inner{
+  background:#fff;padding:20px;border-radius:12px;max-width:380px;width:90%;
+}
+.dupwarn{color:#c00;margin-top:6px;font-weight:600;}
+.code-input{width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;}
+.code-item{display:flex;justify-content:space-between;align-items:center;
+  padding:6px 10px;border:1px solid #ddd;border-radius:8px;margin-bottom:6px;background:#fafafa;}
+.code-del{background:#b00020;color:#fff;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;}
+.code-edit{
+  background:#3498db;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:6px 10px;
+  cursor:pointer;
+}
+.video-wrap{position:relative;width:100%;max-width:720px;margin:0 auto;border-radius:12px;overflow:hidden;}
+#preview{width:100%;display:block;background:#000;}
+#overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+.video-glow{box-shadow:0 0 0 6px #00c853 inset;border-radius:12px;}
+
+/* Config inicial de vuelos */
+.flight-config{
+  margin-top:10px;
+  padding:10px;
+  border-radius:12px;
+  background:#fff9d6;
+  border:1px solid #f1d36a;
+}
+.flight-config-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+}
+#btnAddFlightRow{
+  padding:6px 10px;
+  font-size:13px;
+}
+.flight-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:6px;
+  align-items:center;
+}
+.flight-row input{
+  flex:1;
+}
+.flight-row .flight-num{
+  max-width:140px;
+}
+.flight-row .flight-dest{
+  max-width:140px;
+}
+.flight-row button{
+  padding:6px 8px;
+  font-size:12px;
+  background:#eee;
+}
+
+/* Panel de vuelos durante escaneo */
+.flights-panel-title{
+  margin-top:12px;
+  font-weight:600;
+  font-size:14px;
+}
+.flights-panel{
+  margin-top:6px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.flight-pill{
+  border-radius:12px;
+  padding:8px 10px;
+  background:#fff7c2;
+  border:1px solid #f0c000;
+  min-width:170px;
+  font-size:13px;
+  display:flex;
+  flex-direction:column;
+}
+.flight-pill-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:600;
+}
+.flight-pill-dest{
+  font-size:12px;
+  color:#555;
+}
+.flight-pill-count{
+  font-size:12px;
+  margin-top:4px;
+}
+.flight-pill-actions{
+  display:flex;
+  gap:6px;
+  margin-top:6px;
+  justify-content:flex-end;
+}
+.flight-view-btn{
+  background:#eee;
+  border:none;
+  border-radius:8px;
+  padding:4px 8px;
+  cursor:pointer;
+  font-size:12px;
+}
+.flight-close-btn{
+  background:#28a745;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:4px 8px;
+  cursor:pointer;
+  font-size:14px;
+}
+
+/* Overlay bloqueante mientras guarda */
+.saving-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  backdrop-filter:blur(2px);
+}
+.saving-box{
+  background:#fff;
+  padding:20px 28px;
+  border-radius:16px;
+  text-align:center;
+  box-shadow:0 8px 20px rgba(0,0,0,0.25);
+  max-width:280px;
+}
+.saving-box p{
+  margin:8px 0 0;
+  font-weight:600;
+  color:#333;
+}
+.spinner{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:4px solid var(--fb-yellow);
+  border-top-color:transparent;
+  margin:0 auto;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{
+  to{transform:rotate(360deg);}
+}
+/* Modal confirmación: botones centrados y en columna */
+.confirm-btns{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  margin-top:15px;
+  gap:10px;
+}
+
+.confirm-btns button{
+  width:150px;
+  text-align:center;
+}
+
+/* Botón guardar */
+.okbtn{
+  background:#28a745;
+  color:#fff;
+  font-weight:600;
+}
+/* Equipaje especial en modal */
+.special-row{
+  margin-top:8px;
+  font-size:13px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+#specialTypeWrap select{
+  width:100%;
+  padding:6px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--fb-yellow);
+  color: var(--fb-black);
+  padding: 14px 18px;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.header-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px; /* si querés que sea redondeado */
+}
