@@ -127,6 +127,8 @@ function actualizarContador(){
 // 🟩  SCAN USB — SIEMPRE CONSERVA EL CÓDIGO ORIGINAL
 // ----------------------------------------------------------
 function handleScannedCode(raw){
+  console.log("SCANNER RAW:", JSON.stringify(raw));
+  console.log("INPUT VALUE:", JSON.stringify(i.value));
   if (!raw) return;
   if (confirming) return;
 
