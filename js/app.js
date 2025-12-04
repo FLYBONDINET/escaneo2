@@ -127,20 +127,31 @@ function actualizarContador(){
 // 🟩  SCAN USB — SIEMPRE CONSERVA EL CÓDIGO ORIGINAL
 // ----------------------------------------------------------
 function handleScannedCode(raw){
-  const original = String(raw ?? "").trim();   // NO modificar
+  if(!raw) return;
+
+  // 🔥 Limpieza profunda de caracteres invisibles
+  let original = String(raw)
+      .replace(/[\u0000-\u001F]/g, "")   // borra caracteres de control
+      .replace(/\s+/g, "")               // borra espacios/saltos
+      .replace(/[^\d]/g, "");            // deja sólo dígitos
+
+  // si el código debe ser de 10 dígitos, completar:
+  original = original.padStart(10, "0");
+
   if(!original) return;
   if(confirming) return;
 
   $("#codeEdit").value = original;
   updateFlightSelectInModal();
 
-  if($("#dupWarn")) $("#dupWarn").style.display = allCodesGlobal.has(original) ? "block" : "none";
+  $("#dupWarn").style.display = allCodesGlobal.has(original) ? "block" : "none";
 
   confirming = true;
   $("#confirmModal").style.display = "flex";
   $("#codeEdit").focus();
   $("#codeEdit").select();
 }
+
 
 // ----------------------------------------------------------
 // CONFIRMAR AGREGADO DE CÓDIGO
