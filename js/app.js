@@ -774,16 +774,19 @@
   // -----------------------------------------------------------------------
   // Parte 3: Lector USB (input oculto), manejo de escaneos
   // -----------------------------------------------------------------------
+
   function handleScannedCode(raw){
-    const code = String(raw || "").trim();
-    if(!code) return;
+    // Código EXACTO como lo envía el lector USB (NO LO MODIFICAMOS)
+    const original = String(raw || "").trim();
+    if(!original) return;
 
     if(confirming) return; // si el modal ya está abierto, ignoramos
 
-    $("#codeEdit").value = code;
+    // Mostramos SIEMPRE el código original en el modal
+    $("#codeEdit").value = original;
     updateFlightSelectInModal();
 
-    // reset equipaje especial UI
+    // Reset equipaje especial
     const chk = $("#specialCheck");
     const wrap = $("#specialTypeWrap");
     const sel  = $("#specialTypeSelect");
@@ -791,7 +794,8 @@
     if(wrap) wrap.style.display = 'none';
     if(sel) sel.value = "BABY";
 
-    const isDup = allCodesGlobal.has(code);
+    // DUPLICADOS → buscamos EXACTAMENTE el código original
+    const isDup = allCodesGlobal.has(original);
     if($("#dupWarn")) $("#dupWarn").style.display = isDup ? 'block' : 'none';
     if(isDup){
       try{ soundErr.currentTime = 0; soundErr.play(); }catch{}
@@ -802,6 +806,7 @@
     $("#codeEdit").focus();
     $("#codeEdit").select();
   }
+
 
   function ensureBarcodeInputExists(){
     let el = document.getElementById('barcodeInput');
