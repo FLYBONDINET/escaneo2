@@ -127,24 +127,38 @@ function actualizarContador(){
 // 🟩  SCAN USB — SIEMPRE CONSERVA EL CÓDIGO ORIGINAL
 // ----------------------------------------------------------
 function handleScannedCode(raw){
-  if(!raw) return;
+  if (!raw) return;
+  if (confirming) return;
 
-  // 🔥 Limpieza profunda de caracteres invisibles
-  let original = String(raw)
-      .replace(/[\u0000-\u001F]/g, "")   // borra caracteres de control
-      .replace(/\s+/g, "")               // borra espacios/saltos
-      .replace(/[^\d]/g, "");            // deja sólo dígitos
+  // 1) Convertir a string
+  let v = String(raw);
 
-  // si el código debe ser de 10 dígitos, completar:
-  original = original.padStart(10, "0");
+  // 2) Quitar caracteres invisibles, ruidosos y espacios
+  v = v.replace(/[^\x20-\x7E]/g, "");  // borra caracteres de control
+  v = v.replace(/\s+/g, "");           // quita saltos y espacios
 
-  if(!original) return;
-  if(confirming) return;
+  // 3) Dejar solo dígitos
+  v = v.replace(/\D/g, "");
 
-  $("#codeEdit").value = original;
+  // 🔥 4) Asegurar 10 dígitos SIEMPRE
+  //    (muchos scanners mandan sólo 9 si pierden el primer caracter)
+  if (v.length < 10){
+    v = v.padStart(10, "0");
+  }
+
+  // Si por error escanea más de 10 dígitos (raro) recortamos
+  if (v.length > 10){
+    v = v.slice(0, 10);
+  }
+
+  // 5) Si sigue vacío, descartar
+  if (!v) return;
+
+  // 6) Mostrar en modal
+  $("#codeEdit").value = v;
   updateFlightSelectInModal();
 
-  $("#dupWarn").style.display = allCodesGlobal.has(original) ? "block" : "none";
+  $("#dupWarn").style.display = allCodesGlobal.has(v) ? "block" : "none";
 
   confirming = true;
   $("#confirmModal").style.display = "flex";
