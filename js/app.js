@@ -113,7 +113,12 @@ function actualizarContador(){
 // Procesar código del scanner
 // ----------------------------------------------------------
 function handleScannedCode(raw){
+<<<<<<< HEAD
   if (!raw || confirming) return;
+=======
+  if (!raw) return;
+  if (confirming) return;
+>>>>>>> parent of 5bb123a (ds)
 
   let v = String(raw);
   v = v.replace(/[^\x20-\x7E]/g, "");
