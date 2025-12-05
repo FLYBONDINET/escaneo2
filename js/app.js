@@ -1,14 +1,9 @@
 // ==========================================================
-//  APP.JS — VERSIÓN REARMADA, LIMPIA Y CORREGIDA
-//  Compatible 100% con tu estructura actual
-//  Conserva ceros a la izquierda SIEMPRE
+//  APP.JS — VERSIÓN REARMADA, LIMPIA Y CORREGIDA (FOCO FIJO)
 // ==========================================================
 
 (function(){
 
-// ----------------------------------------------------------
-// VARIABLES BASE
-// ----------------------------------------------------------
 let flights = [];
 let currentFlightId = null;
 let lastFlightId = null;
@@ -17,15 +12,12 @@ let confirming = false;
 
 const $ = s => document.querySelector(s);
 
-// ----------------------------------------------------------
-// UTILIDAD: obtener vuelo por ID
-// ----------------------------------------------------------
 function getFlight(id){
   return flights.find(f => f.id === id) || null;
 }
 
 // ----------------------------------------------------------
-// AGREGAR VUELOS DESDE FORMULARIO
+// Crear vuelos desde formulario
 // ----------------------------------------------------------
 function buildFlightsFromForm(){
   flights = [];
@@ -54,7 +46,7 @@ function buildFlightsFromForm(){
 }
 
 // ----------------------------------------------------------
-// ARRANCAR ESCANEO
+// Iniciar escaneo
 // ----------------------------------------------------------
 function iniciar(){
   const dia = $("#dia").value.trim();
@@ -85,8 +77,6 @@ function iniciar(){
 }
 
 // ----------------------------------------------------------
-// MOSTRAR VUELOS EN PANEL
-// ----------------------------------------------------------
 function renderFlightsPanel(){
   const box = $("#flightsPanel");
   box.innerHTML = "";
@@ -102,15 +92,11 @@ function renderFlightsPanel(){
       </div>
       <div class="flight-pill-count">Bolsas: ${f.codes.length}</div>
     `;
-
     div.onclick = ()=>{ currentFlightId = f.id; lastFlightId = f.id; actualizarContador(); };
-
     box.appendChild(div);
   });
 }
 
-// ----------------------------------------------------------
-// CONTADOR DE BAGS
 // ----------------------------------------------------------
 function actualizarContador(){
   const f = getFlight(currentFlightId);
@@ -124,39 +110,25 @@ function actualizarContador(){
 }
 
 // ----------------------------------------------------------
-// 🟩  SCAN USB — SIEMPRE CONSERVA EL CÓDIGO ORIGINAL
+// Procesar código del scanner
 // ----------------------------------------------------------
 function handleScannedCode(raw){
-  console.log("SCANNER RAW:", JSON.stringify(raw));
-  console.log("INPUT VALUE:", JSON.stringify(i.value));
-  if (!raw) return;
-  if (confirming) return;
+  if (!raw || confirming) return;
 
-  // 1) Convertir a string
   let v = String(raw);
-
-  // 2) Quitar caracteres invisibles, ruidosos y espacios
-  v = v.replace(/[^\x20-\x7E]/g, "");  // borra caracteres de control
-  v = v.replace(/\s+/g, "");           // quita saltos y espacios
-
-  // 3) Dejar solo dígitos
+  v = v.replace(/[^\x20-\x7E]/g, "");
+  v = v.replace(/\s+/g, "");
   v = v.replace(/\D/g, "");
 
-  // 🔥 4) Asegurar 10 dígitos SIEMPRE
-  //    (muchos scanners mandan sólo 9 si pierden el primer caracter)
   if (v.length < 10){
     v = v.padStart(10, "0");
   }
-
-  // Si por error escanea más de 10 dígitos (raro) recortamos
   if (v.length > 10){
     v = v.slice(0, 10);
   }
 
-  // 5) Si sigue vacío, descartar
   if (!v) return;
 
-  // 6) Mostrar en modal
   $("#codeEdit").value = v;
   updateFlightSelectInModal();
 
@@ -168,9 +140,6 @@ function handleScannedCode(raw){
   $("#codeEdit").select();
 }
 
-
-// ----------------------------------------------------------
-// CONFIRMAR AGREGADO DE CÓDIGO
 // ----------------------------------------------------------
 function acceptCode(){
   const code = ($("#codeEdit").value || "").trim();
@@ -195,10 +164,10 @@ function acceptCode(){
 
   confirming = false;
   $("#confirmModal").style.display = "none";
+
+  focusBarcodeInput();
 }
 
-// ----------------------------------------------------------
-// ENVIAR VUELO A GOOGLE SHEETS
 // ----------------------------------------------------------
 async function guardarVueloEnSheet(f){
   const dia = $("#dia").value.trim();
@@ -211,7 +180,7 @@ async function guardarVueloEnSheet(f){
     destination: f.dest,
     total: f.codes.length,
     totalFinal: f.codes.length,
-    codes: f.codes.map(c => String(c.code)) // STRING PURO
+    codes: f.codes.map(c => String(c.code))
   };
 
   try{
@@ -231,8 +200,6 @@ async function guardarVueloEnSheet(f){
 }
 
 // ----------------------------------------------------------
-// FINALIZAR Y GUARDAR
-// ----------------------------------------------------------
 async function onCloseFlight(){
   const f = getFlight(currentFlightId);
   if(!f) return;
@@ -249,7 +216,7 @@ async function onCloseFlight(){
 }
 
 // ----------------------------------------------------------
-// LECTOR USB — INPUT OCULTO
+// INPUT INVISIBLE PARA SCANNER
 // ----------------------------------------------------------
 function ensureInput(){
   let i = document.getElementById("barcodeInput");
@@ -273,6 +240,7 @@ function focusBarcodeInput(){
 function attachBarcodeListeners(){
   const i = ensureInput();
 
+  // ENTER → código completo
   i.addEventListener("keydown", e=>{
     if(e.key === "Enter"){
       const v = i.value.trim();
@@ -282,6 +250,7 @@ function attachBarcodeListeners(){
     }
   });
 
+  // Tiempo sin teclear → se considera código completo
   let t = null;
   i.addEventListener("input", ()=>{
     if(t) clearTimeout(t);
@@ -294,11 +263,9 @@ function attachBarcodeListeners(){
     },80);
   });
 
-  document.addEventListener("click", ()=>{ if(!confirming) focusBarcodeInput(); });
+  // ⚠️ SE ELIMINÓ el listener global que robaba el foco
 }
 
-// ----------------------------------------------------------
-// MOSTRAR CÓDIGOS EN MODAL
 // ----------------------------------------------------------
 function updateFlightSelectInModal(){
   const sel = $("#codeFlightSelect");
@@ -315,18 +282,20 @@ function updateFlightSelectInModal(){
 }
 
 // ----------------------------------------------------------
-// EVENTOS DOM
-// ----------------------------------------------------------
 document.addEventListener("DOMContentLoaded",()=>{
 
-  // Botones principales
   $("#btnStart").addEventListener("click", iniciar);
   $("#btnAccept").addEventListener("click", acceptCode);
-  $("#btnRetry").addEventListener("click", ()=>{ confirming=false; $("#confirmModal").style.display="none"; });
+
+  $("#btnRetry").addEventListener("click", ()=>{
+    confirming=false;
+    $("#confirmModal").style.display="none";
+    focusBarcodeInput();
+  });
+
   $("#btnFinish").addEventListener("click", onCloseFlight);
   $("#btnCancel").addEventListener("click", ()=>location.reload());
 
-  // Agregar fila de vuelo
   $("#btnAddFlightRow").addEventListener("click", ()=>{
     const c = $("#flightRows");
     const r = document.createElement("div");
@@ -339,7 +308,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     c.appendChild(r);
   });
 
-  // Activar lector
+  // activar lector
   attachBarcodeListeners();
 });
 
